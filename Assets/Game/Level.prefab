@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6190317229278012440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6190317229278012442}
+  - component: {fileID: 6190317229278012443}
+  m_Layer: 0
+  m_Name: Level
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6190317229278012442
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6190317229278012440}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -862, y: -406, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6190317229278012443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6190317229278012440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98179e10c17a64689a2be27d49fa746d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 4182908218335890846, guid: 27e053d0c2a2544b8971272ee1c3c155, type: 3}
+  Location: {fileID: 6602173546523978154, guid: b331cbf847bc84ef5ab5e3a5f30a2ec3, type: 3}
+  Food: {fileID: 8045437861175831746, guid: 798f7ba81c3bd413db30e20089ee1c09, type: 3}
+  Text: {fileID: 7067256224511852980, guid: 234b6123621554cdca24a9a50f2eb074, type: 3}
+  Mob: {fileID: 4938499482663910413, guid: a03d67840cd0c40d9965b2db5f194ed1, type: 3}
+  Finish: {fileID: 5822973518645882985, guid: d385800343e204734ba5ea377cbf4e21, type: 3}
+  Panel: {fileID: 4946034255197604822, guid: ab8f4a00eee284534a157f34f852dbd3, type: 3}
+  Width: 4
+  Height: 4
+  Count: 0
+  mobsCards: []
+  newMobsCards: []
+  PlayerX: 1
+  PlayerY: 1
+  PlayerPower: 1
+  busyCount: 0

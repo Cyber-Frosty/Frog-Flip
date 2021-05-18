@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d28e0772caa3042b09276fda4339c10f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - level: {instanceID: 0}
+  - FrogSprite: {fileID: 21300000, guid: ff1b5f0e6c39f4939ba4ae5da555de7d, type: 3}
+  - TadpoleTexture: {fileID: 2800000, guid: f435fddc833b21f4f904bdfaa83d04cb, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
