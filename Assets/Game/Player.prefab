@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ff1b5f0e6c39f4939ba4ae5da555de7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f435fddc833b21f4f904bdfaa83d04cb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -132,8 +132,8 @@ MonoBehaviour:
   Y: 0
   Power: 0
   level: {fileID: 0}
-  FrogSprite: {fileID: 0}
-  TadpoleTexture: {fileID: 0}
+  FrogSprite: {fileID: 21300000, guid: ff1b5f0e6c39f4939ba4ae5da555de7d, type: 3}
+  TadpoleSprite: {fileID: 21300000, guid: f435fddc833b21f4f904bdfaa83d04cb, type: 3}
 --- !u!114 &7694131861185482273
 MonoBehaviour:
   m_ObjectHideFlags: 0

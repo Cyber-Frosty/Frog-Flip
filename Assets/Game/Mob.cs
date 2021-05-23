@@ -9,26 +9,28 @@ using UnityEngine;
 public class Mob : Card
 {
     public bool didMobGoInLastStep = true;
+
     private void OnMouseDown()
     {
-        if (level.busy) return;
+        if (level.Busy) return;
         var (dx, dy) = (X - level.PlayerX, Y - level.PlayerY);
         if ((dx == 1 || dx == -1) && dy == 0 || dx == 0 && (dy == 1 || dy == -1))
         {
-            if (Power > level.map[level.PlayerX, level.PlayerY].GetComponent<Card>().Power)
+            if (Power > level.Map[level.PlayerX, level.PlayerY].GetComponent<Card>().Power)
             {
-                Destroy(level.map[level.PlayerX, level.PlayerY]);
-                level.map[X, Y].GetComponent<Card>().Move(-dx, -dy);
+                Destroy(level.Map[level.PlayerX, level.PlayerY]);
+                level.Map[X, Y].GetComponent<Card>().Move(-dx, -dy);
                 level.PlayerX = level.PlayerY = -1;
-                level.Count++;
+                level.count++;
                 Debug.Log("You lose!");
+                level.Check();
                 return;
             }
-            level.mobsCards.Remove(level.map[X, Y]);
-            Destroy(level.map[X, Y]);
-            level.map[level.PlayerX, level.PlayerY].GetComponent<Card>().Move(dx, dy);
+            level.mobsCards.Remove(level.Map[X, Y]);
+            Destroy(level.Map[X, Y]);
+            level.Map[level.PlayerX, level.PlayerY].GetComponent<Card>().Move(dx, dy);
             (level.PlayerX, level.PlayerY) = (level.PlayerX + dx, level.PlayerY + dy);
-            level.Count++;
+            level.count++;
             level.MobsMove();
             level.mobsCards.AddRange(level.newMobsCards);
             level.newMobsCards.Clear();
@@ -38,86 +40,67 @@ public class Mob : Card
 
     public IEnumerator PrepareToMobMove()
     {
-        yield return new WaitWhile(() => level.busy);
+        yield return new WaitWhile(() => level.Busy);
         MobMove();
     } 
     
     void MobMove()
     {
-        var path = FindPathToPlayer();
-        var pointToFistStep = path;
-        if (path == null)
+        var (pointToFistStepX, pointToFistStepY)  = FindPointToFistStep(
+            CardClass.GetMapCardsClassFromMapGameObjects(level.Map),
+            level.PlayerX, level.PlayerY, X, Y);
+        if (pointToFistStepX == -1 || pointToFistStepY == -1)
             return;
-        while (pointToFistStep.Previous.Previous != null)
-            pointToFistStep = pointToFistStep.Previous;
         
-        var (dx, dy) = (X - pointToFistStep.Value.X, Y - pointToFistStep.Value.Y);
-        if (level.map[X - dx, Y - dy].TryGetComponent(out Player player1) &&
+        var (dx, dy) = (X - pointToFistStepX, Y - pointToFistStepY);
+        if (level.Map[X - dx, Y - dy].TryGetComponent(out Player player1) &&
             player1.Power > Power)
             return;
-
-        if (level.map[X - dx, Y - dy].TryGetComponent(out Player player))
+            
+        if (level.Map[X - dx, Y - dy].TryGetComponent(out Player player))
         {
             level.PlayerX = level.PlayerY = -1;
             Debug.Log("You lose, mf!");
         }
-        Destroy(level.map[X - dx, Y - dy]);
-        level.map[X, Y].GetComponent<Card>().Move(-dx, -dy);
+        Destroy(level.Map[X - dx, Y - dy]);
+        level.Map[X, Y].GetComponent<Card>().Move(-dx, -dy);
         level.Check();
     }
 
-    public SinglyLinkedList<Point> FindPathToPlayer()
+    public static (int, int) FindPointToFistStep(CardClass[,] map, int playerX, int playerY, int mobX, int mobY)
+    {
+        var path = FindPathToPlayer(map, new Point(playerX, playerY), new Point(mobX, mobY));
+        var pointToFistStep = path;
+        if (path == null)
+            return (-1, -1);
+        while (pointToFistStep.Previous.Previous != null)
+            pointToFistStep = pointToFistStep.Previous;
+
+        return (pointToFistStep.Value.X, pointToFistStep.Value.Y);
+    }
+
+    public static SinglyLinkedList<Point> FindPathToPlayer(CardClass[,] map, Point playerPoint, Point mobPoint)
     {
         var queue = new Queue<SinglyLinkedList<Point>>();
-        queue.Enqueue(new SinglyLinkedList<Point>(new Point(X, Y)));
+        queue.Enqueue(new SinglyLinkedList<Point>(mobPoint));
         var visits = new HashSet<Point>();
         while (queue.Count != 0)
         {
             var point = queue.Dequeue();
-            if (!level.InBounds(point.Value) ||
-                level.map[point.Value.X, point.Value.Y].TryGetComponent(out Location location) &&
-                level.map[point.Value.X, point.Value.Y].GetComponent<Card>().Power > Power ||
-                level.map[point.Value.X, point.Value.Y].TryGetComponent(out Mob mob) && !point.Value.Equals(new Point(X, Y)) ||
+            if (!new Rectangle(0, 0, map.GetLength(0), map.GetLength(0)).Contains(point.Value) ||
+                map[point.Value.X, point.Value.Y].IsCardType('L') &&
+                map[point.Value.X, point.Value.Y].Power > map[mobPoint.X, mobPoint.Y].Power ||
+                map[point.Value.X, point.Value.Y].IsCardType('M') && !point.Value.Equals(mobPoint) ||
                 visits.Contains(point.Value))
                 continue;
-            visits.Add(point.Value);
-            if (level.PlayerX == point.Value.X && level.PlayerY == point.Value.Y)
+            if (point.Value.Equals(playerPoint))
                 return point;
+            visits.Add(point.Value);
             for (var dy = -1; dy <= 1; dy++)
             for (var dx = -1; dx <= 1; dx++)
                 if (dx == 0 || dy == 0)
                     queue.Enqueue(new SinglyLinkedList<Point>(new Point() {X = point.Value.X + dx, Y = point.Value.Y + dy}, point ));
         }
         return null;
-    }
-    
-    public class SinglyLinkedList<T> : IEnumerable<T>
-    {
-        public readonly T Value;
-        public readonly SinglyLinkedList<T> Previous;
-        public readonly int Length;
-
-        public SinglyLinkedList(T value, SinglyLinkedList<T> previous = null)
-        {
-            Value = value;
-            Previous = previous;
-            Length = previous?.Length + 1 ?? 1;
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            yield return Value;
-            var pathItem = Previous;
-            while (pathItem != null)
-            {
-                yield return pathItem.Value;
-                pathItem = pathItem.Previous;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

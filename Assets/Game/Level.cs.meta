@@ -3,7 +3,15 @@ guid: 98179e10c17a64689a2be27d49fa746d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Player: {instanceID: 0}
+  - Location: {instanceID: 0}
+  - Food: {instanceID: 0}
+  - Text: {instanceID: 0}
+  - Mob: {instanceID: 0}
+  - Finish: {instanceID: 0}
+  - Panel: {instanceID: 0}
+  - cardFont: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

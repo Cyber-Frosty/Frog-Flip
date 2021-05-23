@@ -1,14 +1,18 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour
 {
     public GameObject levelPrefab;
+
+    LevelType type;
+    int number;
     
-    int levelWidth;
-    int levelHeight;
+    int width;
+    int height;
 
     int finishPower;
 
@@ -17,27 +21,74 @@ public class LevelController : MonoBehaviour
     string mapCode;
     string generatorCode;
 
-    void Level_1()
+    void Start()
     {
-        levelHeight = 2;
-        levelWidth = 2;
-        finishPower = 15;
+        if (PlayerPrefs.HasKey("currentTutorialLevel")) return;
+        PlayerPrefs.SetInt("currentTutorialLevel", 1);
+        PlayerPrefs.SetInt("currentCampaignLevel", 1);
+    }
+
+    public void TutorialPressed()
+    {
+        var tutorialMethod = GetType().GetMethod($@"LevelTutorial{GameObject
+            .Find("TutorialNumber").GetComponentInChildren<TMP_Text>().text}");
+        if (tutorialMethod is null)
+            Debug.Log($@"LevelTutorial{GameObject
+            .Find("TutorialNumber").GetComponentInChildren<TMP_Text>().text}");
+        tutorialMethod?.Invoke(this, null);
+    }
+
+    public void LevelTutorial1()
+    {
+        type = LevelType.Tutorial;
+        number = 1;
+        height = 2;
+        width = 2;
+        finishPower = 10;
         playerCoordinates = Tuple.Create(0, 0);
-        mapCode = "p-1.f-1.f-1.f-2";
-        generatorCode = "f-1.f-2.f-3";
+        mapCode = "Player-1.Food-1/Food-1.Food-2";
+        generatorCode = "Food-1:10.Food-2:20";
+        LevelInitialization();
+    }
+
+    public void LevelTutorial2()
+    {
+        type = LevelType.Tutorial;
+        number = 2;
+        height = 3;
+        width = 3;
+        finishPower = 10;
+        playerCoordinates = Tuple.Create(1, 1);
+        mapCode = "Food-2.Location-3.Food-1/Location-2.Player-1.Food-1/Location-1.Location-3.Food-1";
+        generatorCode = "Food-1:5.Food-2:8.Location-1:14.Location-2:18.Location-3:20";
+        LevelInitialization();
+    }
+
+    public void LevelTutorial3()
+    {
+        type = LevelType.Tutorial;
+        number = 3;
+        height = 5;
+        width = 5;
+        finishPower = 10;
+        playerCoordinates = Tuple.Create(3, 2);
+        mapCode = "Location-2.Location-4.Food-1.Location-1.Food-2/Food-2.Location-6.Food-1.Location-2.Location-1/Food-1.Location-7.Location-3.Player-1.Location-2/Location-4.Location-6.Location-3.Food-2.Location-4/Mob-5.Location-7.Food-2.Location-3.Food-1";
+        generatorCode = "Food-1:4.Food-2:6.Food-3:8.Location-1:12.Location-2:15.Location-3:17.Location-4:18.Location-5:19.Location-6:20";
         LevelInitialization();
     }
 
     public void RandomLevel()
     {
-        var levelController = GameObject.Find("LevelController");
-        DontDestroyOnLoad(levelController);
-        SceneManager.LoadSceneAsync("Game");
-        levelController.GetComponentInChildren<Level>().Activate();
-        levelController.GetComponent<LevelController>().ToActiveScene();
+        type = LevelType.Random;
+        width = 4;
+        height = 4;
+        mapCode = "random";
+        generatorCode = "random";
+        playerCoordinates = Tuple.Create(1, 1);
+        LevelInitialization();
     }
 
-    public void ToActiveScene()
+    void ToActiveScene()
     {
         StartCoroutine(MoveMoveMove());
     }
@@ -51,20 +102,35 @@ public class LevelController : MonoBehaviour
             yield return null;
         }
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
+        while (currentMovementTime < 0.6f)
+        {
+            currentMovementTime += Time.deltaTime;
+            yield return null;
+        }
     }
     
-    public void ButtonPressed()
+    public void FinishButtonPressed()
     {
         SceneManager.LoadSceneAsync("MainMenu");
     }
     
     void LevelInitialization()
     {
-        var game = Instantiate(levelPrefab, transform.position, Quaternion.identity);
+        var levelController = GameObject.Find("LevelController");
+        var game = Instantiate(levelPrefab, levelController.transform.position, Quaternion.identity);
+        game.transform.SetParent(levelController.transform);
         var level = game.GetComponent<Level>();
-        level.Width = levelWidth;
-        level.Height = levelHeight;
+        level.type = type;
+        level.number = number;
+        level.width = width;
+        level.height = height;
+        level.finishPower = finishPower;
         (level.PlayerX, level.PlayerY) = playerCoordinates;
-        level.Activate();
+        level.mapCode = mapCode;
+        level.generatorCode = generatorCode;
+        DontDestroyOnLoad(levelController);
+        SceneManager.LoadSceneAsync("Game");
+        game.GetComponentInChildren<Level>().Activate();
+        levelController.GetComponent<LevelController>().ToActiveScene();
     }
 }

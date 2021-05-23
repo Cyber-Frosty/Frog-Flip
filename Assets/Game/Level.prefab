@@ -50,6 +50,7 @@ MonoBehaviour:
   Mob: {fileID: 4938499482663910413, guid: a03d67840cd0c40d9965b2db5f194ed1, type: 3}
   Finish: {fileID: 5822973518645882985, guid: d385800343e204734ba5ea377cbf4e21, type: 3}
   Panel: {fileID: 4946034255197604822, guid: ab8f4a00eee284534a157f34f852dbd3, type: 3}
+  cardFont: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   Width: 4
   Height: 4
   Count: 0
