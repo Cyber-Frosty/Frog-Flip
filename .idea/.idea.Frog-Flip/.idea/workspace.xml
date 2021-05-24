@@ -19,7 +19,27 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="230e7990-27d1-46b9-8624-25bbef4c853d" name="Default Changelist" comment="" />
+    <list default="true" id="230e7990-27d1-46b9-8624-25bbef4c853d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Frog-Flip/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Frog-Flip/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Finish.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Finish.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Game/Level.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Game/Level.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/LevelController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/LevelController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MainMenu/PlayControls.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MainMenu/PlayControls.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MainMenu/PlayControls.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MainMenu/PlayControls.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/ArtifactDB" beforeDir="false" afterPath="$PROJECT_DIR$/Library/ArtifactDB" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/SceneVisibilityState.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Library/SceneVisibilityState.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/ScriptAssemblies/GameAssembly.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Library/ScriptAssemblies/GameAssembly.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/ScriptAssemblies/GameAssembly.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Library/ScriptAssemblies/GameAssembly.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/SourceAssetDB" beforeDir="false" afterPath="$PROJECT_DIR$/Library/SourceAssetDB" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/StateCache/MainStageHierarchy/6c/6cde31e62726052594bbaccaba86f82d.json" beforeDir="false" afterPath="$PROJECT_DIR$/Library/StateCache/MainStageHierarchy/6c/6cde31e62726052594bbaccaba86f82d.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/StateCache/PrefabStageHierarchy/65/652502d254eea0b6b6e53d4289b9ec36.json" beforeDir="false" afterPath="$PROJECT_DIR$/Library/StateCache/PrefabStageHierarchy/65/652502d254eea0b6b6e53d4289b9ec36.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/StateCache/SceneView/a7/a726d37e0ebb9a4bb92dad63ca4de02b.json" beforeDir="false" afterPath="$PROJECT_DIR$/Library/StateCache/SceneView/a7/a726d37e0ebb9a4bb92dad63ca4de02b.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library/StateCache/SceneView/de/deb1068ec26de65a2f4f53ba1dc9656c.json" beforeDir="false" afterPath="$PROJECT_DIR$/Library/StateCache/SceneView/de/deb1068ec26de65a2f4f53ba1dc9656c.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logs/AssetImportWorker0.log" beforeDir="false" afterPath="$PROJECT_DIR$/Logs/AssetImportWorker0.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logs/shadercompiler-AssetImportWorker0.log" beforeDir="false" afterPath="$PROJECT_DIR$/Logs/shadercompiler-AssetImportWorker0.log" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,6 +47,18 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Assets/Game/Card.cs" />
+        <option value="$PROJECT_DIR$/Assets/Game/Mob.cs" />
+        <option value="$PROJECT_DIR$/Assets/LevelController.cs" />
+        <option value="$PROJECT_DIR$/Assets/Game/Level.cs" />
+        <option value="$PROJECT_DIR$/Assets/Game/Finish.cs" />
+        <option value="$PROJECT_DIR$/Assets/MainMenu/PlayControls.cs" />
+      </list>
+    </option>
   </component>
   <component name="ProjectId" id="1ssvcV6RhUdsxIiFmnMkVDYlqo3" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -44,6 +76,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
@@ -84,6 +117,7 @@
       <updated>1621674196484</updated>
       <workItem from="1621674207922" duration="359000" />
       <workItem from="1621797486729" duration="3000" />
+      <workItem from="1621820922892" duration="12811000" />
     </task>
     <servers />
   </component>
@@ -106,5 +140,15 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="449" y="285" key="#Notifications" timestamp="1621822029380">
+      <screen x="0" y="23" width="1440" height="815" />
+    </state>
+    <state x="449" y="285" key="#Notifications/0.23.1440.815@0.23.1440.815" timestamp="1621822029380" />
+    <state x="229" y="64" key="SettingsEditor" timestamp="1621832839377">
+      <screen x="0" y="23" width="1440" height="815" />
+    </state>
+    <state x="229" y="64" key="SettingsEditor/0.23.1440.815@0.23.1440.815" timestamp="1621832839377" />
   </component>
 </project>

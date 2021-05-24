@@ -13,16 +13,14 @@ public abstract class Card : MonoBehaviour
     public void Move(int dx, int dy)
     {
         StartCoroutine(Replace(X, Y, dx, dy));
-        //level.map[X, Y].transform.position = level.position[X + dx, Y + dy];
         level.Map[X + dx, Y + dy] = level.Map[X, Y];
         level.Map[X, Y] = null;
         GetComponentInChildren<TMP_Text>().text = $"{Power}";
-        //GetComponentInChildren<TMP_Text>().rectTransform.position = level.position[X + dx, Y + dy];
-        if (this.TryGetComponent(out Mob mob))
+        if (TryGetComponent(out Mob mob))
             mob.didMobGoInLastStep = true;
         if (X == 0 && dx == 1 || X == level.width - 1 && dx == -1
                               || Y == 0 && dy == 1 || Y == level.height - 1 && dy == -1)
-            level.GenerateRandom(X, Y);
+            level.Map[X, Y] = level.GenerateRandomCard(X, Y, false);
         else
             level.Map[X - dx, Y - dy].GetComponent<Card>().Move(dx, dy);
         X += dx;
@@ -31,15 +29,16 @@ public abstract class Card : MonoBehaviour
 
     IEnumerator Replace(int x, int y, int dx, int dy)
     {
-        level.busyCount++;
-        var totalMovementTime = 1f;
-        var currentMovementTime = 0f;
-        while (Vector3.Distance(transform.position, level.Position[x + dx, y + dy]) > 0)
+        level.renderCount++;
+        var total = 1f;
+        var current = 0f;
+        while (Vector3.Distance(transform.position, level.Positions[x + dx, y + dy]) > 0)
         {
-            currentMovementTime += Time.deltaTime;
-            transform.localPosition = Vector3.Lerp(transform.position, level.Position[x + dx, y + dy], currentMovementTime / totalMovementTime);
+            current += Time.deltaTime;
+            transform.localPosition = 
+                Vector3.Lerp(transform.position, level.Positions[x + dx, y + dy], current / total);
             yield return null;
         }
-        level.busyCount--;
+        level.renderCount--;
     }
 }

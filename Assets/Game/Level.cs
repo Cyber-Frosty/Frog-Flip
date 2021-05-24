@@ -1,14 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
 
 public enum LevelType
@@ -31,31 +27,26 @@ public class Level : MonoBehaviour
     public GameObject Finish;
     public GameObject Panel;
     public TMP_FontAsset cardFont;
-    
-    Vector3 finish;
 
-    public int width = 4;
-    public int height = 4;
-
+    public int width;
+    public int height;
     public int finishPower;
-
     public string mapCode;
     public string generatorCode;
     
     public GameObject[,] Map;
-    public Vector3[,] Position;
-    public int count;
-    //List<Tuple<GameObject, int>> generator;
-    
+    public Vector3[,] Positions;
+    Vector3 finishPosition;
+    public int movesCount;
+    List<Tuple<GameObject, int>> generator;
     public List<GameObject> mobsCards;
     public List<GameObject> newMobsCards;
-    
-    public int PlayerX = 1;
-    public int PlayerY = 1;
+    public int PlayerX;
+    public int PlayerY;
     public int PlayerPower = 1;
 
-    public int busyCount;
-    public bool Busy => busyCount > 0;
+    public int renderCount;
+    public bool IsRendered => renderCount > 0;
     
     public bool InBounds(Point point)
     {
@@ -67,55 +58,58 @@ public class Level : MonoBehaviour
     {
         SetPositions();
         Map = new GameObject[width, height];
+        if (!generatorCode.Equals("random"))
+            SetGenerator();
+        else
+            SetStandardGenerator();
         if (!mapCode.Equals("random"))
             GenerateMap();
         else
             GenerateRandomMap();
-        /*if (!generatorCode.Equals("random"))
-            SetGenerator();
-        else
-            SetStandartGenerator();*/
-        var f = Instantiate(Finish, finish, Quaternion.identity);
-        f.transform.SetParent(transform);
-        f.GetComponent<Card>().Power = finishPower;
-        f.GetComponent<Card>().level = this;
-        var text = Instantiate(Text, finish, Quaternion.identity);
-        text.transform.SetParent(f.transform);
-        text.GetComponentInChildren<TMP_Text>().text = finishPower.ToString();
-        text.GetComponentInChildren<TMP_Text>().rectTransform.position = finish + new Vector3(0.5f, -0.5f);
-        text.GetComponent<TMP_Text>().font = cardFont;
-        text.GetComponent<TMP_Text>().color = Color.white;
-        text.GetComponent<TMP_Text>().fontSize = 0.6f;
-        f.GetComponent<BoxCollider2D>().enabled = true;
+        var finishCard = GenerateCard(width, height - 1, finishPosition, Finish, finishPower);
+        Check();
     }
     
-    /*private void SetGenerator()
-    {
-        generator = new List<Tuple<GameObject, int>>(20);
-        var items = generatorCode.Split('.');
-        foreach (var item in items)
-        {
-            var s = item.Split(':');
-            var (card, maxRoll) = (s[0], s[1]);
-            var t = card.Split('-');
-            var (cardType, cardPower) = (t[0], t[1]);
-        }
-    }
-
-    private void SetStandartGenerator()
-    {
-        //throw new NotImplementedException();
-    }*/
-
     void SetPositions()
     {
         var xPosition = 1 - width;
         var yPosition = 1 - height;
-        Position = new Vector3[width, height];
+        Positions = new Vector3[width, height];
         for (var y = 0; y < height; y++)
         for (var x = 0; x < width; x++)
-            Position[x, y] = new Vector3(xPosition + 2 * x, yPosition + 2 * y, 0);
-        finish = new Vector3(xPosition + 2 * width, yPosition + 2 * (height - 1), 0);
+            Positions[x, y] = new Vector3(xPosition + 2 * x, yPosition + 2 * y, 0);
+        finishPosition = new Vector3(xPosition + 2 * width, yPosition + 2 * (height - 1), 0);
+    }
+    
+    void SetGenerator()
+    {
+        generator = new List<Tuple<GameObject, int>>();
+        var items = generatorCode.Split('.');
+        var previousMaxRoll = 0;
+        foreach (var item in items)
+        {
+            var s = item.Split(':');
+            var (card, maxRoll) = (s[0], int.Parse(s[1]));
+            var t = card.Split('-');
+            var (cardType, cardPower) = 
+                (GetType().GetField(t[0]).GetValue(this) as GameObject, int.Parse(t[1]));
+
+            for (var i = previousMaxRoll; i < maxRoll; i++)
+                generator.Add(Tuple.Create(cardType, cardPower));
+
+            previousMaxRoll = maxRoll;
+        }
+    }
+
+    void SetStandardGenerator()
+    {
+        generator = new List<Tuple<GameObject, int>>();
+        for (var i = 0; i < 6; i++)
+            generator.Add(Tuple.Create(Food, Math.Max((6 - i) / 2, 1)));
+        for (var i = 6; i < 18; i++)
+            generator.Add(Tuple.Create(Location, i / 4));
+        for (var i = 18; i < 20; i++)
+            generator.Add(Tuple.Create(Mob, 6 / 2 * (i - 17)));
     }
     
     void GenerateMap()
@@ -130,7 +124,7 @@ public class Level : MonoBehaviour
                 var (cardPrefab, cardPower) = (GetType()
                     .GetField(card[0])
                     .GetValue(this) as GameObject, int.Parse(card[1]));
-                Generate(x, y, cardPrefab, cardPower);
+                Map[x, y] = GenerateCard(x, y, Positions[x, y], cardPrefab, cardPower);
             }
         }
     }
@@ -141,54 +135,43 @@ public class Level : MonoBehaviour
         for (var x = 0; x < width; x++)
         {
             if (x == PlayerX && y == PlayerY)
-                Generate(x, y, Player, 1);
-            else if (x == 2 && y == 2)
-                Generate(x, y, Mob, 10);
-            else
-            {
-                var (dx, dy) = (x - PlayerX, y - PlayerY);
-                if ((dx == 1 || dx == -1) && dy == 0 || dx == 0 && (dy == 1 || dy == -1))
-                    Generate(x, y, Food, 1);
-                else
-                    GenerateRandom(x, y);
-            }
+                Map[x, y] = GenerateCard(x, y, Positions[x, y], Player, 1);
+            else 
+                Map[x, y] = GenerateRandomCard(x, y, true);
         }
     }
 
-    private void Generate(int x, int y, GameObject card, int power)
+    GameObject GenerateCard(int x, int y, Vector3 position, GameObject cardPrefab, int power)
     {
-        Map[x, y] = Instantiate(card, Position[x, y], Quaternion.identity);
-        Map[x, y].transform.localScale = new Vector3(0, 0, 0);
-        StartCoroutine(Grow(x, y, power));
-        Map[x, y].transform.SetParent(transform);
-        Map[x, y].GetComponent<Card>().X = x;
-        Map[x, y].GetComponent<Card>().Y = y;
-        Map[x, y].GetComponent<Card>().level = this;
-        Map[x, y].GetComponent<Card>().Power = power;
-        Map[x, y].GetComponent<BoxCollider2D>().enabled = true;
-        if (Map[x, y].TryGetComponent(out Mob mob))
-            newMobsCards.Add(Map[x, y]);
+        var card = Instantiate(cardPrefab, position, Quaternion.identity);
+        card.transform.localScale = new Vector3(0, 0, 0);
+        StartCoroutine(CardGrow(card, position, power));
+        card.transform.SetParent(transform);
+        card.GetComponent<Card>().X = x;
+        card.GetComponent<Card>().Y = y;
+        card.GetComponent<Card>().level = this;
+        card.GetComponent<Card>().Power = power;
+        card.GetComponent<BoxCollider2D>().enabled = true;
+        if (card.TryGetComponent(out Mob mob))
+            newMobsCards.Add(card);
+        return card;
     }
 
-    public void GenerateRandom(int x, int y)
+    public GameObject GenerateRandomCard(int x, int y, bool isStart)
     {
-        int power;
-        var cardTypeNumber = Random.Range(0, 10);
-        if (cardTypeNumber > 5)
+        var roll = Random.Range(0, 20);
+        roll = isStart 
+            ? Math.Max(0, roll - (width + height) / 2
+                          + Math.Abs(x - PlayerX) + Math.Abs(y - PlayerY) + (x + y) / 2) % 20
+            : Math.Max(0, roll - (Math.Abs(x - PlayerX) + Math.Abs(y - PlayerY)) * 4 + (x + y) / 2) % 20;
+        Debug.Log(roll);
+        var (cardType, cardPower) = generator[roll];
+        if (isStart || cardType.TryGetComponent(out Food f))
         {
-            power = Random.Range(1, 4);
-            Generate(x, y, Food, power);
+            return GenerateCard(x, y, Positions[x, y], cardType, cardPower);
         }
-        else if (cardTypeNumber == 5)
-        {
-            power = PlayerPower + 2;
-            Generate(x, y, Mob, power);
-        }
-        else
-        {
-            power = Random.Range(1 + 2 * count / 3, 8 + 2 * count / 3);
-            Generate(x, y, Location, power);
-        }
+        return GenerateCard(x, y, Positions[x, y], cardType,
+            cardPower + Random.Range(1 + movesCount / 4, 4 + movesCount / 4));
     }
 
     public void MobsMove()
@@ -204,25 +187,27 @@ public class Level : MonoBehaviour
                     mob.didMobGoInLastStep = false;
     }
 
-    IEnumerator Grow(int x, int y, int power)
+    IEnumerator CardGrow(GameObject card, Vector3 position, int power)
     {
-        var totalMovementTime = 0.3f;
-        var currentMovementTime = 0f;
-        while (currentMovementTime < totalMovementTime)
+        renderCount++;
+        var total = 0.3f;
+        var current = 0f;
+        while (current < total)
         {
-            currentMovementTime += Time.deltaTime;
-            if (currentMovementTime > totalMovementTime)
-                currentMovementTime = totalMovementTime;
-            Map[x, y].transform.localScale = new Vector3(currentMovementTime / totalMovementTime, currentMovementTime / totalMovementTime, currentMovementTime / totalMovementTime);
+            current += Time.deltaTime;
+            if (current > total)
+                current = total;
+            card.transform.localScale = new Vector3(current / total, current / total, current / total);
             yield return null;
         }
-        var text = Instantiate(Text, Position[x, y], Quaternion.identity);
-        text.transform.SetParent(Map[x, y].transform);
+        var text = Instantiate(Text, position, Quaternion.identity);
+        text.transform.SetParent(card.transform);
         text.GetComponent<TMP_Text>().text = power.ToString();
-        text.GetComponent<TMP_Text>().rectTransform.position = Position[x, y] + new Vector3(0.5f, -0.5f);
+        text.GetComponent<TMP_Text>().rectTransform.position = position + new Vector3(0.5f, -0.5f);
         text.GetComponent<TMP_Text>().font = cardFont;
         text.GetComponent<TMP_Text>().color = Color.white;
         text.GetComponent<TMP_Text>().fontSize = 0.6f;
+        renderCount--;
     }
     
     public void Check()
@@ -251,16 +236,17 @@ public class Level : MonoBehaviour
             checkCount--;
         if (checkCount == 0)
             StartCoroutine(Defeat());
-        if (PlayerPower >= 10)
+        if (PlayerPower >= finishPower)
             Map[PlayerX, PlayerY].GetComponent<SpriteRenderer>().sprite =
                 Map[PlayerX, PlayerY].GetComponent<Player>().FrogSprite;
     }
 
-    public IEnumerator Defeat()
+    IEnumerator Defeat()
     {
-        yield return new WaitWhile(() => Busy);
-        busyCount++;
+        yield return new WaitWhile(() => IsRendered);
+        renderCount++;
         var defeatPanel = Instantiate(Panel, new Vector3(862, 401, -1), Quaternion.identity);
+        defeatPanel.transform.SetParent(transform);
         defeatPanel.GetComponentInChildren<TMP_Text>().text = "Поражение!";
     }
 }

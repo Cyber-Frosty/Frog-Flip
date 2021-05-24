@@ -12,7 +12,7 @@ public class Mob : Card
 
     private void OnMouseDown()
     {
-        if (level.Busy) return;
+        if (level.IsRendered) return;
         var (dx, dy) = (X - level.PlayerX, Y - level.PlayerY);
         if ((dx == 1 || dx == -1) && dy == 0 || dx == 0 && (dy == 1 || dy == -1))
         {
@@ -21,7 +21,7 @@ public class Mob : Card
                 Destroy(level.Map[level.PlayerX, level.PlayerY]);
                 level.Map[X, Y].GetComponent<Card>().Move(-dx, -dy);
                 level.PlayerX = level.PlayerY = -1;
-                level.count++;
+                level.movesCount++;
                 Debug.Log("You lose!");
                 level.Check();
                 return;
@@ -30,7 +30,7 @@ public class Mob : Card
             Destroy(level.Map[X, Y]);
             level.Map[level.PlayerX, level.PlayerY].GetComponent<Card>().Move(dx, dy);
             (level.PlayerX, level.PlayerY) = (level.PlayerX + dx, level.PlayerY + dy);
-            level.count++;
+            level.movesCount++;
             level.MobsMove();
             level.mobsCards.AddRange(level.newMobsCards);
             level.newMobsCards.Clear();
@@ -40,7 +40,7 @@ public class Mob : Card
 
     public IEnumerator PrepareToMobMove()
     {
-        yield return new WaitWhile(() => level.Busy);
+        yield return new WaitWhile(() => level.IsRendered);
         MobMove();
     } 
     
@@ -79,7 +79,7 @@ public class Mob : Card
         return (pointToFistStep.Value.X, pointToFistStep.Value.Y);
     }
 
-    public static SinglyLinkedList<Point> FindPathToPlayer(CardClass[,] map, Point playerPoint, Point mobPoint)
+    static SinglyLinkedList<Point> FindPathToPlayer(CardClass[,] map, Point playerPoint, Point mobPoint)
     {
         var queue = new Queue<SinglyLinkedList<Point>>();
         queue.Enqueue(new SinglyLinkedList<Point>(mobPoint));
@@ -87,7 +87,7 @@ public class Mob : Card
         while (queue.Count != 0)
         {
             var point = queue.Dequeue();
-            if (!new Rectangle(0, 0, map.GetLength(0), map.GetLength(0)).Contains(point.Value) ||
+            if (!new Rectangle(0, 0, map.GetLength(0), map.GetLength(1)).Contains(point.Value) ||
                 map[point.Value.X, point.Value.Y].IsCardType('L') &&
                 map[point.Value.X, point.Value.Y].Power > map[mobPoint.X, mobPoint.Y].Power ||
                 map[point.Value.X, point.Value.Y].IsCardType('M') && !point.Value.Equals(mobPoint) ||
